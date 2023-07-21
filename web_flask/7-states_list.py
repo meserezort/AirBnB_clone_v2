@@ -1,9 +1,6 @@
 #!/usr/bin/python3
-"""Start a Flask web application"""
-
-
-from models import storage
 from flask import Flask, render_template
+from models import storage
 from models.state import State
 
 
@@ -11,17 +8,23 @@ app = Flask(__name__)
 
 
 @app.teardown_appcontext
-def close_db(self):
-    """Close session"""
+def tear_down(self):
+    """tear down app context"""
     storage.close()
 
 
 @app.route('/states_list', strict_slashes=False)
-def stateList():
-    """function to execute"""
-    states = storage.all(State).values()
-    return render_template('7-states_list.html', states=states)
+def list_states():
+    """lists states from database
+    Returns:
+        HTML
+    """
+    dict_states = storage.all(State)
+    all_states = []
+    for k, v in dict_states.items():
+        all_states.append(v)
+    return render_template('7-states_list.html', all_states=all_states)
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port="5000")
+    app.run(host='0.0.0.0', port=5000)
